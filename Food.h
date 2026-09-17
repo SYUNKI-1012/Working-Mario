@@ -8,7 +8,6 @@ enum FoodType
     FOODTYPE_MAX
 };
 
-
 class Food :
     public GameObject
 {
@@ -22,7 +21,6 @@ public:
     void SetFoodType(FoodType type);
     void OnCollision(GameObject* pTarget) override;
     int GetScore() { return score_; }
-
 private:
     FoodType type_;
     int hModel_;

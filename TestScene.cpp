@@ -1,22 +1,23 @@
-#define _CRT_SECURE_NO_WARNINGS
+#define  _CRT_SECURE_NO_WARNINGS
 #include "TestScene.h"
 #include "Player.h"
 #include "Ground.h"
-#include "Engine//Camera.h"
-#include "Food.h"
+#include "MovingFloor.h"
+#include "Engine/Camera.h"
 #include "Engine/Text.h"
 
-
-namespace
-{
-	Ground* pGround;
+namespace {
+	Ground* pGround;						// 地面オブジェクトへのポインタ
+	MovingFloor* pMovingFloor;			// 動く床オブジェクトへのポインタ
+	const int CAMERA_HEIGHT = 8.0f;		// カメラの高さオフセット
+	XMFLOAT3 START_POS = { 15.0f, 0.75, 0.5f };	// カメラ追従を開始するプレイヤーの位置
+	const float END_POS_X = 43.0f;			// カメラ追従を終了するプレイヤーのX座標
 }
 
 //コンストラクタ
 TestScene::TestScene(GameObject* parent)
-	: GameObject(parent, "TestScene")
-{
-}
+	: GameObject(parent, "TestScene"), myScore(0)
+{}
 
 //初期化
 void TestScene::Initialize()
@@ -24,49 +25,45 @@ void TestScene::Initialize()
 	//pWp = Instantiate<Weapon>(this);
 	pPlayer_ = Instantiate <Player>(this);
 	pGround = Instantiate<Ground>(this);
+	pMovingFloor = Instantiate<MovingFloor>(this);
 	pPlayer_->SetGround(pGround);
 
-
-	Camera::SetPosition({ 0.0f, -20.0f, 8.0f });
-	Camera::SetTarget({ 5.0f, 0.0f, 4.0f });
+	Camera::SetPosition({ pPlayer_->GetPosition().x, pPlayer_->GetPosition().y + CAMERA_HEIGHT,-22 });
+	Camera::SetTarget({ pPlayer_->GetPosition().x, pPlayer_->GetPosition().y + CAMERA_HEIGHT,0 });
 
 	pText_ = new Text;
-	pText_->Initialize();
-
+	pText_->Initialize();//テキストの初期化
 }
 
 //更新
 void TestScene::Update()
 {
-	XMFLOAT3 pos = pPlayer_->GetPosition();
-	Camera::SetPosition({ pos.x, 5.0f, pos.z - 15.0f });
-	Camera::SetTarget({ pos.x, 5.0f, pos.z });
+	if (pPlayer_->GetPosition().x > START_POS.x && pPlayer_->GetPosition().x < END_POS_X) {
+		Camera::SetPosition({ pPlayer_->GetPosition().x, START_POS.y + CAMERA_HEIGHT,-22 });
+		Camera::SetTarget({ pPlayer_->GetPosition().x, START_POS.y + CAMERA_HEIGHT,0 });
+	}
+
 }
 
-//餌を数えて、残り餌数を表示
-//スコアを表示
-//やり方は任せる
-//sprintfでcの文字列を直で作ってもいいよ
+//やること！
+// 餌を数えて、残り餌数を表示
+// スコアを表示 
+// やり方は任せる！
+// sprintfでCの文字列を直で作ってもいいよ
 
 //描画
 void TestScene::Draw()
 {
-	std::string scrText;
-	char buffer[256];
-	sprintf(buffer, "%010d", myScore);
-	scrText = "SCORE:" + std::string(buffer);
-	pText_->Draw(500, 50, scrText.c_str());
-	int esaCount, normalEsaCount, powerEsaCount;
-	std::tuple<int, int, int> esa = pGround->GetEsaCount();
-	esaCount = std::get<0>(esa);
-	normalEsaCount = std::get<1>(esa);
-	powerEsaCount = std::get<2>(esa);
-	std::string EsaString = "NOEMAL ESA:" + std::to_string(normalEsaCount) + " POWER ESA:" + std::to_string(powerEsaCount);
-	pText_->Draw(500, 100, EsaString.c_str());
+	//std::string scrText;
+	//char buffer[256];
+	//sprintf(buffer, "%010d", myScore);
+	//scrText = "SCORE:" + std::string(buffer);
+	//pText_->Draw(500, 50, scrText.c_str());
+	//pText_->Draw(500, 100, scrText.c_str());
 }
 
 //開放
 void TestScene::Release()
 {
-	pText_->Release();//テキスト開放
+	pText_->Release();//テキストの開放
 }

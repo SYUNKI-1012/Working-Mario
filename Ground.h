@@ -1,55 +1,27 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include <vector>
-#include <tuple>
 
 class Ground :
 	public GameObject
 {
-
-	//vector< vector<int>> mapData;
 public:
 	//コンストラクタ
 	//引数：parent  親オブジェクト（SceneManager）
 	Ground(GameObject* parent);
-
 	//初期化
 	void Initialize() override;
-	std::vector<std::vector<int>> GetMapData() { return mapData_; }
+	const std::vector<std::vector<int>>& GetMapData() const { return mapData_; }
 	//更新
 	void Update() override;
-
 	//描画
 	void Draw() override;
-
 	//開放
 	void Release() override;
-	std::tuple<int, int, int> GetEsaCount() { return std::make_tuple(esaCount_, normalEsaCount_, powerEsaCount_); }
-	void DecEsaCount(int type)
-	{
-		esaCount_--;
-		if (type == 1)
-		{
-			normalEsaCount_--;
-		}
-		else if (type == 2)
-		{
-			powerEsaCount_--;
-		}
-	}
-	int GetMapHeight() const { return mapHeight_; }
-
 private:
 	int hModel_;
 	int hModelt_;
 	std::vector<std::vector<int>> mapData_;
-	std::vector<std::vector<int>> objMap_;
-	int hEsaModel_;
-	int hPowerEsaModel_;
 	int mapWidth_;
 	int mapHeight_;
-	int esaCount_;
-	int normalEsaCount_;
-	int powerEsaCount_;
 };
-
